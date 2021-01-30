@@ -17,6 +17,9 @@ SYMBOLS(Letters) LIST:
 O = open floor tile
 X = no tile, no floor, is a pit, is empty (whatever you wanna classify it as)
 P* = player (you can put as many as you want since we dont have movement yet)
+L* = lighthouse
+B = bridge
+W = wall
 
 
-*putting a player puts a floor tile underneath him, dont O/OP/O
+*putting these puts a floor tile underneath him, dont O/OP/O or O/LO/O
