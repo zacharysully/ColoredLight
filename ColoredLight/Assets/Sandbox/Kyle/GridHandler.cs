@@ -6,20 +6,20 @@ using System.Text.RegularExpressions;
 
 
 
-public static class GridHandler 
+public static class GridHandler
 {
     static DataSpace[,] _levelGrid;
     static System.Object[,] _objectsGrid;
     //static Player _playerRef;
-   
+
     static WorldHandler _worldRef;
 
     //Creates basic info for varibales to hold
     public static void Init()
     {
-        _levelGrid = new DataSpace[0,0];
-        _objectsGrid = new System.Object[0,0];
-        _objectsGrid[0,0] = null;
+        _levelGrid = new DataSpace[0, 0];
+        _objectsGrid = new System.Object[0, 0];
+        _objectsGrid[0, 0] = null;
     }
 
     //Takes in a List of strings and decodes them
@@ -78,40 +78,95 @@ public static class GridHandler
         {
             for (int j = 0; j < columns; j++)
             {
-                if (data[i,j] == "P")
+                if (data[i, j] == "P")
                 {
-                    _objectsGrid[i,j] = new object(); //Player.p;
-                    _levelGrid[i,j] = new DataSpace("O");
+                    _objectsGrid[i, j] = new object(); //Player.p;
+                    _levelGrid[i, j] = new DataSpace("O");
                 }
+                //Empty spot -B
+                else if (data[i, j] == "X")
+                {
+                    _objectsGrid[i, j] = null;
+                    _levelGrid[i, j] = null;
+                }
+                else if (data[i, j] == "B")
+                {
+                    _objectsGrid[i, j] = new object(); //block
+                    _levelGrid[i, j] = new DataSpace("O");
+                }
+
                 else
                 {
                     _objectsGrid[i, j] = null;
-                    _levelGrid[i,j] = new DataSpace(data[i,j]);
+                    _levelGrid[i, j] = new DataSpace(data[i, j]);
                 }
 
-                _worldRef.Populate3DLevel(i, j, data[i,j]);
+                _worldRef.Populate3DLevel(i, j, data[i, j]);
             }
         }
     }
 
     //called to move the player in any directions that are passed
     //data grids are changed and then reflected into the 3D objects
-    public static void MovePlayer(eDirections dir)
+    public static bool AttemptMovePlayer(int row, int column, eDirections dir)
     {
+
+        Debug.Log("Position: " + row + "," + column);
+        int tempRow = row;
+        int tempColumn = column;
+
         switch (dir)
         {
             case eDirections.up:
+                tempColumn -= 1;
                 break;
             case eDirections.down:
+                tempColumn += 1;
                 break;
             case eDirections.left:
+                tempRow -= 1;
                 break;
             case eDirections.right:
+                tempRow += 1;
                 break;
             default:
                 break;
         }
+
+        Debug.Log("Moving to: " + tempRow + "," + tempColumn);
+        if (IsTileWithinBounds(tempRow, tempColumn))
+        {
+            if (_objectsGrid[tempColumn, tempRow] != null)
+            {
+                return false;
+            }
+            else
+            {
+                Debug.Log("No object detected at " + tempColumn + "," + tempRow);
+                _worldRef.MoveObject(row,column,dir);
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+
     }
+
+    //-B
+    private static bool IsTileWithinBounds(int row, int column)
+    {
+        if (row < 0 || column < 0 || row > _levelGrid.GetLength(1) - 1 || column > _levelGrid.GetLength(0) - 1)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
 
     //Resets array data for level layouts to make way for the next one
     public static void UnloadLevel()
@@ -120,8 +175,8 @@ public static class GridHandler
         {
             for (int j = 0; j < _levelGrid.GetLength(1); j++)
             {
-                _levelGrid[i,j] = null;
-                _objectsGrid[i,j] = null;
+                _levelGrid[i, j] = null;
+                _objectsGrid[i, j] = null;
             }
         }
     }

@@ -13,15 +13,11 @@ public enum eDirections
 public class Player : MonoBehaviour
 {
     //Variable declaration
-    public static Player p;
-    private float blockSize;
-    public float raycastHeight = .5f;
+    public int[] coords;
 
     // Start is called before the first frame update
     void Start()
     {
-
-        p = this;
 
     }
 
@@ -30,28 +26,31 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown("w") || Input.GetKeyDown("up"))
         {
-            Move(eDirections.up);
+            SendMove(eDirections.up);
         }
         else if (Input.GetKeyDown("s") || Input.GetKeyDown("down"))
         {
-            Move(eDirections.down);
+            SendMove(eDirections.down);
         }
         else if (Input.GetKeyDown("a") || Input.GetKeyDown("left"))
         {
-            Move(eDirections.left);
+            SendMove(eDirections.left);
         }
         else if (Input.GetKeyDown("d") || Input.GetKeyDown("right"))
         {
-            Move(eDirections.right);
+            SendMove(eDirections.right);
         }
     }
 
-    private void Move(eDirections dir)
+    //Tell the GridHandler where we want to move
+    private void SendMove(eDirections dir)
     {
 
-        Debug.Log("Moving" + dir);
-        //Insert calls to Kyle's code here
+        //GridHandler.AttemptMovePlayer(coords[0], coords[1], dir) ? DidMove() : DidNotMove();
+
 
     }
 
+    private void DidMove() { Debug.Log("Moved!"); }
+    private void DidNotMove() { Debug.Log("Didn't move!"); }
 }

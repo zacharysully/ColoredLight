@@ -8,6 +8,7 @@ public class WorldHandler : MonoBehaviour
 
     GameObject _playerOBJ;
     GameObject _floorOBJ;
+    GameObject _blockOBJ;
 
     GameObject[,] _floorTracker;
     GameObject[,] _objectTracker;
@@ -15,6 +16,9 @@ public class WorldHandler : MonoBehaviour
     {
         _playerOBJ = Resources.Load<GameObject>("Prefabs/Player");
         _floorOBJ = Resources.Load<GameObject>("Prefabs/Tile");
+
+        //-B
+        _blockOBJ = Resources.Load<GameObject>("Prefabs/Block");
 
         GridHandler.SetWorldRef = this;
         GridHandler.LoadLevel(LevelName);
@@ -33,14 +37,25 @@ public class WorldHandler : MonoBehaviour
         {
             case "P":
                 Debug.Log("player made");
-                _objectTracker[xPos,zPos] = Instantiate<GameObject>(_playerOBJ, spawnPos, _playerOBJ.transform.rotation, transform);
-                _floorTracker[xPos,zPos] = Instantiate<GameObject>(_floorOBJ, spawnPos, _floorOBJ.transform.rotation, transform);
+                _objectTracker[xPos, zPos] = Instantiate<GameObject>(_playerOBJ, spawnPos, _playerOBJ.transform.rotation, transform);
+                _floorTracker[xPos, zPos] = Instantiate<GameObject>(_floorOBJ, spawnPos, _floorOBJ.transform.rotation, transform);
+
+                //-B
+                _objectTracker[xPos, zPos].GetComponent<Player>().coords = new int[] { zPos, xPos };
+
                 break;
             case "O \n":
             case "O":
                 Debug.Log("tile made");
-                _objectTracker[xPos,zPos] = null;
-                _floorTracker[xPos,zPos] = Instantiate<GameObject>(_floorOBJ, spawnPos, _floorOBJ.transform.rotation, transform);
+                _objectTracker[xPos, zPos] = null;
+                _floorTracker[xPos, zPos] = Instantiate<GameObject>(_floorOBJ, spawnPos, _floorOBJ.transform.rotation, transform);
+                break;
+
+            //-B
+            case "B":
+                Debug.Log("Block made!");
+                _objectTracker[xPos, zPos] = Instantiate<GameObject>(_blockOBJ, spawnPos, _blockOBJ.transform.rotation, transform);
+                _floorTracker[xPos, zPos] = Instantiate<GameObject>(_floorOBJ, spawnPos, _floorOBJ.transform.rotation, transform);
                 break;
 
             default:
@@ -50,4 +65,10 @@ public class WorldHandler : MonoBehaviour
                 break;
         }
     }
+
+    public void MoveObject(int xPos, int zPos, eDirections dir)
+    {
+
+    }
+
 }
