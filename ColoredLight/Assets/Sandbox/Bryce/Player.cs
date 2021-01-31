@@ -15,11 +15,6 @@ public class Player : MonoBehaviour
     //Variable declaration
     public int[] coords;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
 
     // Update is called once per frame
     void Update()

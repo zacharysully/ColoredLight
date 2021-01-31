@@ -78,32 +78,47 @@ public static class GridHandler
         {
             for (int j = 0; j < columns; j++)
             {
-                if (data[i, j] == "P")
+                DataSpace newspace = null;
+                switch (data[i,j])
                 {
-                    _objectsGrid[i, j] = new object(); //Player.p;
-                    _levelGrid[i, j] = new DataSpace("O");
-                }
-                //Empty spot -B
-                else if (data[i, j] == "X")
-                {
-                    _objectsGrid[i, j] = null;
-                    _levelGrid[i, j] = null;
-                }
-                else if (data[i, j] == "B")
-                {
-                    _objectsGrid[i, j] = new object(); //block
-                    _levelGrid[i, j] = new DataSpace("O");
-                }
-
-                else
-                {
-                    _objectsGrid[i, j] = null;
-                    _levelGrid[i, j] = new DataSpace(data[i, j]);
+                    case "P":
+                        newspace = new DataSpace("O");
+                        break;
+                    case "B":
+                    case "O":
+                        newspace = new DataSpace(data[i, j]);
+                        break;
+                    case "L":
+                        newspace = new DataSpace("O");
+                        break;
+                    case "W":
+                        newspace = new DataSpace("X");
+                        break;
+                    default:
+                        newspace = null;
+                        break;
                 }
 
+                _objectsGrid[i, j] = null;
+                _levelGrid[i, j] = newspace;
                 _worldRef.Populate3DLevel(i, j, data[i, j]);
             }
         }
+    }
+
+    public static void AddObjectToGrid(int x, int z, System.Object script)
+    {
+        _objectsGrid[x, z] = script;
+    }
+
+    //updates the data that the something has moved to a new position
+    private static void UpdateGrid<T>(int xpos1, int zpos1, int xpos2, int zpos2, T thing)
+    {
+        T temp = thing;
+        _objectsGrid[xpos1, zpos1] = null;
+        _objectsGrid[xpos2, zpos2] = temp;
+
+        _worldRef.Update3DArea(xpos1, zpos1, xpos2, xpos2);
     }
 
     //called to move the player in any directions that are passed
@@ -144,6 +159,7 @@ public static class GridHandler
             {
                 Debug.Log("No object detected at " + tempColumn + "," + tempRow);
                 _worldRef.MoveObject(row,column,dir);
+                
                 return true;
             }
         }
@@ -157,7 +173,7 @@ public static class GridHandler
     //-B
     private static bool IsTileWithinBounds(int row, int column)
     {
-        if (row < 0 || column < 0 || row > _levelGrid.GetLength(1) - 1 || column > _levelGrid.GetLength(0) - 1)
+        if (row < 0 || column < 0 || row > _levelGrid.GetLength(1) - 1 || column > _levelGrid.GetLength(0) - 1 || _levelGrid[row,column].GetID == "X")
         {
             return false;
         }

@@ -10,4 +10,6 @@ public class DataSpace
     {
         _identifier = id;
     }
+
+    public string GetID { get { return _identifier; } }
 }
